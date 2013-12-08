@@ -6,3 +6,12 @@
 .inbox td {
     text-align: center;
 }
+
+.inbox a.inboxPageLink {
+    margin-right: 5px;
+}
+
+.inbox tfoot td {
+    text-align: left;
+    padding-left: 20px;
+}

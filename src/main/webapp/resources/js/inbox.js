@@ -7,7 +7,7 @@
         options: {
             //position where to render component may be: instead, after, before, append
             position : 'instead',
-            expandColumns : true,
+            usePager : true,
             cssClass : 'inbox',
             columnModel : [
                 {id : '1', type : 'text', title : 'Request ID', display : true},
@@ -17,6 +17,7 @@
             data : {
                 page : 1,
                 count : 100,
+                pages : 10,
                 rows : [
                     {'1' : '1234', '2' : 'High', '3' : 'PSI1234567'},
                     {'1' : '2345', '2' : 'High', '3' : 'PSI1987567'},
@@ -59,6 +60,7 @@
         _renderStructure : function(){
             this.$thead = $('<thead/>').appendTo(this.element);
             this.$tbody = $('<tbody/>').appendTo(this.element);
+            this.$tfoot = $('<tfoot/>').insertBefore(this.$tbody);
         },
 
         _renderHeader : function(){
@@ -82,6 +84,18 @@
             });
         },
 
+        _renderPager : function(){
+            var $tpager = $('<td/>', {colspan : this._columnModel.length}).appendTo(this.$tfoot),
+                i;
+            for(i=1; i<=this._data.pages; i++){
+                $('<a/>', {'class':'inboxPageLink', href : '#', text : i}).appendTo($tpager);
+            }
+            $('a.inboxPageLink', $tpager).on('click', function(e){
+                e.preventDefault();
+            });
+            $tpager.show();
+        },
+
         _render : function(){
             this._columnModel = this.options.columnModel;
             if(typeof this._columnModel === 'function'){
@@ -96,6 +110,9 @@
             this._renderStructure();
             this._renderHeader();
             this._renderBody();
+            if(this.options.usePager){
+                this._renderPager();
+            }
         },
 
         refresh : function(){
