@@ -12,9 +12,9 @@
             columnModel : {
                 order : ['1', '2', '3'],
                 columns : {
-                    '1' : {type : 'text', title : 'Request ID', display : true, alwaysDisplay : true},
-                    '2' : {type : 'img', title : 'Priority', display : true},
-                    '3' : {type : 'text', title : 'Requestor', display : true}
+                    '1' : {type : 'text', title : 'Request ID', display : true, alwaysDisplay : true, sortable : true},
+                    '2' : {type : 'img', title : 'Priority', display : true, sortable : true},
+                    '3' : {type : 'text', title : 'Requestor', display : true, sortable : true}
                 }
             },
             data : {
@@ -68,12 +68,16 @@
 
         _renderHeader : function(){
             var $thead = this.$thead,
-                columns = this._columnModel.columns;
+                columns = this._columnModel.columns,
+                self = this;
             $.each(this._columnModel.order, function(i, colId){
                 var col = columns[colId];
                 if(col.display){
-                    $('<th/>').appendTo($thead).text(col.title);
+                    $('<th/>').appendTo($thead).text(col.title).data('colId', colId);
                 }
+            });
+            $('th', $thead).on('click', function(){
+                self._onSort($(this).data('colId'));
             });
         },
 
@@ -121,6 +125,10 @@
             if(this.options.usePager){
                 this._renderPager();
             }
+        },
+
+        _onSort : function(colId){
+            alert('Sort of ['+colId+'] is clicked!');
         },
 
         refresh : function(){
