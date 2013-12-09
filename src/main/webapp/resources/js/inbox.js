@@ -9,19 +9,22 @@
             position : 'instead',
             usePager : true,
             cssClass : 'inbox',
-            columnModel : [
-                {id : '1', type : 'text', title : 'Request ID', display : true},
-                {id : '2', type : 'img', title : 'Priority', display : true},
-                {id : '3', type : 'text', title : 'Requestor', display : true}
-            ],
+            columnModel : {
+                order : ['1', '2', '3'],
+                columns : {
+                    '1' : {type : 'text', title : 'Request ID', display : true, alwaysDisplay : true},
+                    '2' : {type : 'img', title : 'Priority', display : true},
+                    '3' : {type : 'text', title : 'Requestor', display : true}
+                }
+            },
             data : {
                 page : 1,
                 count : 100,
                 pages : 10,
                 rows : [
-                    {'1' : '1234', '2' : 'High', '3' : 'PSI1234567'},
-                    {'1' : '2345', '2' : 'High', '3' : 'PSI1987567'},
-                    {'1' : '1789', '2' : 'Low', '3' : 'PSI1245567'}
+                    {'1' : '1234', '2' : 'High', '3' : '1234567'},
+                    {'1' : '2345', '2' : 'High', '3' : '1987567'},
+                    {'1' : '1789', '2' : 'Low', '3' : '1245567'}
                 ]
             }
         },
@@ -64,8 +67,10 @@
         },
 
         _renderHeader : function(){
-            var $thead = this.$thead;
-            $.each(this._columnModel, function(i, col){
+            var $thead = this.$thead,
+                columns = this._columnModel.columns;
+            $.each(this._columnModel.order, function(i, colId){
+                var col = columns[colId];
                 if(col.display){
                     $('<th/>').appendTo($thead).text(col.title);
                 }
@@ -74,18 +79,21 @@
 
         _renderBody : function(){
             var $tbody = this.$tbody,
-                columnModel = this._columnModel,
+                columnOrder = this._columnModel.order,
+                columns = this._columnModel.columns,
                 data = this._data;
             $.each(data.rows, function(i, row){
                 var $tr = $('<tr/>').appendTo($tbody);
-                $.each(columnModel, function(j, col){
-                    $('<td/>').text(row[col.id]).appendTo($tr);
+                $.each(columnOrder, function(j, colId){
+                    if(columns[colId].display){
+                        $('<td/>').text(row[colId]).appendTo($tr);
+                    }
                 });
             });
         },
 
         _renderPager : function(){
-            var $tpager = $('<td/>', {colspan : this._columnModel.length}).appendTo(this.$tfoot),
+            var $tpager = $('<td/>', {colspan : this._columnModel.order.length}).appendTo(this.$tfoot),
                 i;
             for(i=1; i<=this._data.pages; i++){
                 $('<a/>', {'class':'inboxPageLink', href : '#', text : i}).appendTo($tpager);
@@ -122,11 +130,7 @@
         },
 
         showColumn : function(columnId, show){
-            $.each(this.options.columnModel, function(i, col){
-                if(col.id == columnId){
-                    col.display = !!show;
-                }
-            });
+            this._columnModel.columns[columnId].display = !!show;
             this.refresh();
         }
 
